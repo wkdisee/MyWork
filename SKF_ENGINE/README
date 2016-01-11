@@ -1,2 +1,4 @@
 This a developing engine for SKF API in openssl. SKF API is a set of api for usb key.
 These contain some simple engine and skf samples.
+
+I build the engine in Windows using cl complier of VS C++, learning from the windows makefile of openssl in ms\ntdll.mak. 
