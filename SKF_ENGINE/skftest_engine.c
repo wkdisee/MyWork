@@ -36,13 +36,45 @@ int hwskf_enum(){
 	}
 	return rv;
 }
+int hwskf_connect(long devnum){
+	ULONG rv = 0;
+	char *pbDevList = 0;
+	ULONG ulDevListLen = 0;
 
-#define HWSKF_CMD_ENUM  (ENGINE_CMD_BASE)
+	rv = SKF_EnumDev(1, pbDevList, &ulDevListLen);
+	if(rv != SAR_OK){ fprintf(stderr, "SKF_EnumDev error with %d\n", rv);return rv;}
+	pbDevList = (char *)malloc(ulDevListLen);
+	rv = SKF_EnumDev(1, pbDevList, &ulDevListLen);
+	char *pp = pbDevList;
+	long d = devnum;
+	while (d>0 && pbDevList+ulDevListLen>pp){
+		d--;
+		if (strlen(pp)) pp+=strlen(pp);
+		else pp++;
+	}
+	if (pbDevList+ulDevListLen<=pp || strlen(pp)==0){
+		printf("Not Found the NO.%d Device!\n", devnum);
+		return 1;
+	}
+	DEVHANDLE hDev;
+	rv = SKF_ConnectDev(pp, &hDev);
+	if(rv){fprintf(stderr, "SKF_ConnectDev with %d\n", rv); return rv;}
+	else printf("Connect Device %s \n", pp);
+	if(pbDevList)free(pbDevList);
+	return SAR_OK;
+}
+
+#define HWSKF_CMD_ENUM			(ENGINE_CMD_BASE)
+#define HWSKF_CMD_CONNECTION	(ENGINE_CMD_BASE + 1)
 static const ENGINE_CMD_DEFN hwskf_cmd_defns[] = {
 	{HWSKF_CMD_ENUM,
-		"ENUM",
+		"enum",
 		"enum the all skf devices connected",
 		ENGINE_CMD_FLAG_NO_INPUT}, /* enumerate the devices of skf */
+	{HWSKF_CMD_CONNECTION,
+		"connect",
+		"connect the devices chosen by number",
+		ENGINE_CMD_FLAG_NUMERIC}, /* connect the devices chosen by number*/
 	{0, NULL, NULL, 0}
 	};
 
@@ -56,6 +88,10 @@ static int hwskf_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
         hwskf_enum();
         break;
 	/* The command isn't understood by this engine */
+    case HWSKF_CMD_CONNECTION:
+    	fprintf(stderr, "arrive at HWSKF_CMD_CONNECTION.\n");
+    	hwskf_connect(i);
+    	break;
 	default:
 		to_return = 0;
 		break;
