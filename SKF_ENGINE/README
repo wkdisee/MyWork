@@ -4,8 +4,8 @@ These contain some simple engine and skf samples.
 I build the engine in Windows using cl complier of VS C++, learning from the windows makefile of openssl in ms\ntdll.mak. 
 
 building command learning from ntdll.mak like:
->cl /Foout\e_skftest.obj /I \openssl\include /MD /Ox /O2 /Ob2 -DOPENSSL_THREADS  -DDSO_WIN32 -W3 -Gs0 -GF -Gy -nologo -DOPENSSL_SYSNAME_WIN32 -DWIN32_LEAN_AND_MEAN -DL_ENDIAN -D_CRT_SECURE_NO_DEPRECATE -DOPENSSL_USE_APPLINK -DOPENSSL_NO_RC5 -DOPENSSL_NO_MD2 -DOPENSSL_NO_KRB5 -DOPENSSL_NO_JPAKE -DOPENSSL_NO_STATIC_ENGINE /Zi -D_WINDLL -DOPENSSL_BUILD_SHLIBSSL -c skftest_engine.c
+>cl /Foout\e_skftest.obj /I \openssl\include /I skfdemo /MD /Ox /O2 /Ob2 -DOPENSSL_THREADS  -DDSO_WIN32 -W3 -Gs0 -GF -Gy -nologo -DOPENSSL_SYSNAME_WIN32 -DWIN32_LEAN_AND_MEAN -DL_ENDIAN -D_CRT_SECURE_NO_DEPRECATE -DOPENSSL_USE_APPLINK -DOPENSSL_NO_RC5 -DOPENSSL_NO_MD2 -DOPENSSL_NO_KRB5 -DOPENSSL_NO_JPAKE -DOPENSSL_NO_STATIC_ENGINE /Zi -D_WINDLL -DOPENSSL_BUILD_SHLIBSSL -c skftest_engine.c
 
->link /nologo /subsystem:console /opt:ref /debug /dll /out:out\e_skftest.dll out\e_skftest.obj \openssl\out32dll\libeay32.lib ws2_32.lib gdi32.lib advapi32.lib crypt32.lib user32.lib
+>link /nologo /subsystem:console /opt:ref /debug /dll /out:out\e_skftest.dll out\e_skftest.obj \openssl\out32dll\libeay32.lib skfdemo\ShuttleCsp11_3000GM.lib ws2_32.lib gdi32.lib advapi32.lib crypt32.lib user32.lib
 
 then the dll engine lib will be generated.

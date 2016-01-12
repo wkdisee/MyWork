@@ -4,9 +4,38 @@
 #include <string.h>
 #include <openssl/crypto.h>
 #include <openssl/engine.h>
+#include "SKFAPI.h"
 
 static const char *engine_hwskf_id = "skfdev";
 static const char *engine_hwskf_name = "hardware using skf API";
+
+int hwskf_enum(){
+	ULONG rv = 0;
+	char *pbDevList = 0;
+	ULONG ulDevListLen = 0;
+
+	rv = SKF_EnumDev(1, pbDevList, &ulDevListLen);
+	if(rv != SAR_OK){
+		fprintf(stderr, "SKF_EnumDev error with code:%d", rv);
+		return rv;
+	}
+	if (ulDevListLen < 2){
+		printf("No Device!\n");
+		return -1;
+	}
+	pbDevList = (char *)malloc(ulDevListLen);
+	rv = SKF_EnumDev(1, pbDevList, &ulDevListLen);
+	char *pp = pbDevList;
+	while (pbDevList+ulDevListLen - pp){
+		if(strlen(pp)){
+			printf("find Device %s\n", pp);
+			pp += strlen(pp);
+		}else{
+			pp ++;
+		}
+	}
+	return rv;
+}
 
 #define HWSKF_CMD_ENUM  (ENGINE_CMD_BASE)
 static const ENGINE_CMD_DEFN hwskf_cmd_defns[] = {
@@ -24,6 +53,7 @@ static int hwskf_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)(void))
 	switch(cmd) {
 	case HWSKF_CMD_ENUM:
         fprintf(stderr, "arrive at HWSKF_CMD_ENUM.\n");
+        hwskf_enum();
         break;
 	/* The command isn't understood by this engine */
 	default:
